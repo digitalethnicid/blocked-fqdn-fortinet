@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fortigate Config Generator (IP & Domain)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0b1220;       /* deep navy */
+      --card: #101a2b;     /* slightly lighter */
+      --ink: #e6eefc;      /* off-white */
+      --muted: #9bb0d3;    /* muted text */
+      --brand: #6aa2ff;    /* primary */
+      --brand-2: #4de2c6;  /* accent */
+      --ok: #1fda7a;
+      --warn: #f7b733;
+      --err: #ff6b6b;
+      --code: #0c0f16;
+      --chip: rgba(106,162,255,.15);
+      --radius: 16px;
+      --radius-lg: 22px;
+      --shadow: 0 10px 35px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 1200px at 10% -10%, rgba(77,226,198,.15), transparent 60%),
+                  radial-gradient(1200px 1200px at 120% 10%, rgba(106,162,255,.12), transparent 50%),
+                  var(--bg);
+      color: var(--ink);
+    }
+    .container{ max-width: 1100px; margin: 0 auto; padding: 32px 18px 60px; }
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px;
+    }
+    .brand{ display:flex; align-items:center; gap:14px; }
+    .brand-badge{
+      width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      display:grid; place-items:center; font-weight:800; color:#0b1220; box-shadow: 0 8px 20px rgba(106,162,255,.35);
+    }
+    h1{ font-size: clamp(22px, 3vw, 28px); margin: 0; letter-spacing: .2px; }
+    .subtitle{ color: var(--muted); margin-top: 6px; font-size: 14px; }
+
+    .grid{ display:grid; grid-template-columns: 1fr; gap: 16px; }
+    @media (min-width: 980px){ .grid{ grid-template-columns: 1.2fr .8fr; } }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 60%), var(--card);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .card h2{ margin: 6px 0 14px; font-size: 16px; letter-spacing: .2px; }
+    .row{ display:flex; gap: 10px; flex-wrap: wrap; }
+
+    input[type="text"], .fake-input, textarea{
+      width: 100%; background: rgba(12,15,22,.7); border: 1px solid rgba(255,255,255,.08);
+      color: var(--ink); padding: 12px 14px; border-radius: 12px; outline: none;
+    }
+    textarea{ min-height: 140px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    .btn{
+      appearance: none; border: 0; background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      color: #0b1220; font-weight: 700; padding: 12px 14px; border-radius: 12px; cursor: pointer; transition: transform .04s ease, box-shadow .2s;
+      box-shadow: 0 10px 24px rgba(106,162,255,.35);
+      display:inline-flex; align-items:center; gap:8px; text-decoration:none;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.secondary{ background: transparent; color: var(--ink); border: 1px solid rgba(255,255,255,.12); box-shadow: none; }
+
+    .chips{ display:flex; gap:8px; flex-wrap:wrap; }
+    .chip{ background: var(--chip); color: var(--ink); padding: 6px 10px; border-radius: 999px; font-size: 12px; border: 1px solid rgba(106,162,255,.3);
+    }
+
+    .out{ background: var(--code); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; overflow: auto; white-space: pre; }
+
+    .section-title{ display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-top: 12px; }
+    .small{ color: var(--muted); font-size: 12px; }
+
+    .footer-note{ margin-top: 18px; color: var(--muted); font-size: 12px; }
+    .hidden{ display:none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-badge">FG</div>
+        <div>
+          <h1>Fortigate Config Generator</h1>
+          <div class="subtitle">Konversi skrip Python Anda menjadi aplikasi web untuk memproses file campuran IP & Domain dan menghasilkan konfigurasi FortiGate.</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip">Offline</span>
+        <span class="chip">Single File</span>
+        <span class="chip">Clipboard & Download</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Left: Inputs -->
+      <section class="card">
+        <h2>1) Masukan Data</h2>
+        <div class="row">
+          <div style="flex:1 1 280px">
+            <label class="small">Unggah file .txt (opsional)</label>
+            <div class="row">
+              <input id="fileInput" type="file" accept=".txt" class="fake-input" />
+              <button class="btn secondary" id="btnSample" type="button">Gunakan contoh</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px">
+          <label class="small">Atau tempel teks di sini (campuran IP / FQDN, dipisah spasi/enter)</label>
+          <textarea id="rawInput" placeholder="Contoh:\n192.0.2.10\nexample.com\n2001:db8::1\n1.2.3.4/24\nbad-input"></textarea>
+        </div>
+
+        <h2 style="margin-top:16px">2) Nama Group</h2>
+        <div class="row">
+          <input id="grpIp" type="text" placeholder="Nama group untuk IP (mis. Blocked-IP)" />
+          <input id="grpDomain" type="text" placeholder="Nama group untuk Domain (mis. Blocked-FQDN)" />
+        </div>
+
+        <div class="row" style="margin-top:14px">
+          <button class="btn" id="btnProcess" type="button">Proses & Hasilkan</button>
+          <button class="btn secondary" id="btnClear" type="button">Bersihkan</button>
+        </div>
+
+        <div id="warnBox" class="footer-note hidden"></div>
+      </section>
+
+      <!-- Right: Stats / Help -->
+      <aside class="card">
+        <h2>Bantuan Singkat</h2>
+        <ul class="small">
+          <li>Jika IP tanpa CIDR, otomatis: IPv4 → <code>/32</code>, IPv6 → <code>/128</code>.</li>
+          <li>Duplikat dihapus, urutan dipertahankan.</li>
+          <li>Domain diformat sebagai FQDN dengan wildcard: <code>set fqdn *example.com</code>.</li>
+          <li>Hasil dibagi: IP, Domain, dan Gabungan. Semua bisa <em>copy</em> atau <em>download</em>.</li>
+        </ul>
+        <div class="section-title" style="margin-top:10px"><strong>Status Parsing</strong><span class="small">otomatis muncul setelah proses</span></div>
+        <div class="chips" id="stats"></div>
+      </aside>
+    </div>
+
+    <!-- Outputs -->
+    <section class="card" style="margin-top:16px">
+      <div class="section-title"><h2>Output – Konfigurasi IP</h2>
+        <div class="row">
+          <button class="btn secondary" id="copyIp" type="button">Copy</button>
+          <button class="btn secondary" id="dlIp" type="button">Download</button>
+        </div>
+      </div>
+      <pre class="out" id="outIp" aria-label="config-ip"></pre>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="section-title"><h2>Output – Konfigurasi Domain</h2>
+        <div class="row">
+          <button class="btn secondary" id="copyDomain" type="button">Copy</button>
+          <button class="btn secondary" id="dlDomain" type="button">Download</button>
+        </div>
+      </div>
+      <pre class="out" id="outDomain" aria-label="config-domain"></pre>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <div class="section-title"><h2>Output – Gabungan</h2>
+        <div class="row">
+          <button class="btn secondary" id="copyCombined" type="button">Copy</button>
+          <button class="btn secondary" id="dlCombined" type="button">Download</button>
+        </div>
+      </div>
+      <pre class="out" id="outCombined" aria-label="config-combined"></pre>
+    </section>
+
+    <div class="footer-note">Catatan: Nama objek pada <code>edit</code> mengikuti input (IP/FQDN) seperti skrip Python asli Anda.</div>
+  </div>
+
+  <script>
+    // ===== Helpers =====
+    const $ = (sel) => document.querySelector(sel);
+    const warnBox = $('#warnBox');
+    const statsBox = $('#stats');
+
+    function setWarn(html){
+      if(!html){ warnBox.classList.add('hidden'); warnBox.innerHTML = ''; return; }
+      warnBox.classList.remove('hidden');
+      warnBox.innerHTML = html;
+    }
+
+    function downloadFile(filename, content){
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    }
+
+    async function copyToClipboard(text){
+      try{ await navigator.clipboard.writeText(text); return true; }
+      catch{ return false; }
+    }
+
+    // ===== Validation & Normalization (JS port of your Python) =====
+    function isIPv6Literal(addr){ return addr.includes(':'); }
+
+    function normalizeIp(ip){
+      if(!ip.includes('/')){ return (isIPv6Literal(ip) ? ip + '/128' : ip + '/32'); }
+      return ip;
+    }
+
+    function isValidIPv4(s){
+      // 0-255 dotted quad
+      const m = s.match(/^([0-9]{1,3})(?:\.([0-9]{1,3})){3}$/);
+      if(!m) return false;
+      return s.split('.').every(oct => oct.length > 0 && Number(oct) >= 0 && Number(oct) <= 255 && String(Number(oct)) === String(Number(oct)).replace(/\..*/, ''));
+    }
+
+    function isValidIPv6(s){
+      // Use URL parser trick for IPv6 literal
+      try{
+        const u = new URL('http://[' + s + ']/');
+        return !!u.hostname; // browser will normalize if valid
+      }catch{ return false; }
+    }
+
+    function isValidIpNetwork(ip){
+      const parts = ip.split('/');
+      const hasCidr = parts.length === 2;
+      const addr = parts[0];
+      if(isIPv6Literal(addr)){
+        if(!isValidIPv6(addr)) return false;
+        const mask = hasCidr ? Number(parts[1]) : NaN;
+        return hasCidr ? (mask >= 0 && mask <= 128) : true;
+      }else{
+        if(!isValidIPv4(addr)) return false;
+        const mask = hasCidr ? Number(parts[1]) : NaN;
+        return hasCidr ? (mask >= 0 && mask <= 32) : true;
+      }
+    }
+
+    function isValidDomain(domain){
+      // Similar to your Python regex: simple and practical
+      const pattern = /^(?!-)[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+      return pattern.test(domain);
+    }
+
+    // ===== Generators (JS port) =====
+    function generateFortigateIpConfig(ips, groupName){
+      const seen = new Set();
+      const ordered = [];
+      for(let ip of ips){
+        ip = ip.trim(); if(!ip) continue;
+        ip = normalizeIp(ip);
+        if(!isValidIpNetwork(ip)){ addWarn(`⚠️  Warning: '${ip}' bukan IP valid, dilewati.`); continue; }
+        if(!seen.has(ip)){ ordered.push(ip); seen.add(ip); }
+      }
+      if(!ordered.length) return '';
+      const lines = [];
+      lines.push('config firewall address');
+      for(const ip of ordered){
+        lines.push(`edit ${ip}`);
+        lines.push(`set subnet ${ip}`);
+        lines.push('next');
+      }
+      lines.push('end');
+      lines.push('');
+      lines.push('config firewall addrgrp');
+      lines.push(`edit ${groupName}`);
+      lines.push('append member ' + ordered.join(' '));
+      lines.push('next');
+      lines.push('end');
+      return lines.join('\n');
+    }
+
+    function generateFortigateDomainConfig(domains, groupName){
+      const seen = new Set();
+      const ordered = [];
+      for(let d of domains){
+        d = d.trim(); if(!d) continue;
+        if(!isValidDomain(d)){ addWarn(`⚠️  Warning: '${d}' bukan domain valid, dilewati.`); continue; }
+        if(!seen.has(d)){ ordered.push(d); seen.add(d); }
+      }
+      if(!ordered.length) return '';
+      const lines = [];
+      lines.push('config firewall address');
+      for(const d of ordered){
+        lines.push(`edit ${d}`);
+        lines.push('set type fqdn');
+        lines.push(`set fqdn *${d}`);
+        lines.push('next');
+      }
+      lines.push('end');
+      lines.push('');
+      lines.push('config firewall addrgrp');
+      lines.push(`edit ${groupName}`);
+      lines.push('append member ' + ordered.join(' '));
+      lines.push('next');
+      lines.push('end');
+      return lines.join('\n');
+    }
+
+    // ===== Orchestration =====
+    let warnMsgs = [];
+    function addWarn(msg){ warnMsgs.push(msg); }
+    function flushWarn(){
+      if(!warnMsgs.length){ setWarn(''); return; }
+      setWarn(warnMsgs.join('<br>'));
+      warnMsgs = [];
+    }
+
+    function parseItems(raw){
+      const tokens = raw.replace(/\n/g, ' ').split(' ').map(t => t.trim()).filter(Boolean);
+      const ips = []; const domains = [];
+      for(const item of tokens){
+        const normalized = normalizeIp(item);
+        if(isValidIpNetwork(normalized)) ips.push(item);
+        else if(isValidDomain(item)) domains.push(item);
+        else addWarn(`⚠️  Warning: '${item}' bukan IP/domain valid, dilewati.`);
+      }
+      return { ips, domains };
+    }
+
+    function updateStats({ips, domains, invalidCount}){
+      statsBox.innerHTML = '';
+      const mk = (text) => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = text; return s; };
+      statsBox.appendChild(mk(`IP terdeteksi: ${ips}`));
+      statsBox.appendChild(mk(`Domain terdeteksi: ${domains}`));
+      if(invalidCount > 0) statsBox.appendChild(mk(`Invalid: ${invalidCount}`));
+    }
+
+    function process(){
+      const raw = ($('#rawInput').value || '').trim();
+      const grpIp = ($('#grpIp').value || '').trim() || 'Group-IP';
+      const grpDo = ($('#grpDomain').value || '').trim() || 'Group-FQDN';
+      if(!raw){ setWarn('ℹ️  Masukkan teks atau unggah file terlebih dahulu.'); return; }
+
+      warnMsgs = []; // reset
+      const { ips, domains } = parseItems(raw);
+
+      const cfgIp = generateFortigateIpConfig(ips, grpIp);
+      const cfgDo = generateFortigateDomainConfig(domains, grpDo);
+
+      const combined = [cfgIp, cfgDo].filter(Boolean).join('\n\n');
+
+      $('#outIp').textContent = cfgIp;
+      $('#outDomain').textContent = cfgDo;
+      $('#outCombined').textContent = combined;
+
+      const invalidCount = (warnMsgs.length);
+      updateStats({ ips: ips.length, domains: domains.length, invalidCount });
+      flushWarn();
+    }
+
+    // ===== Events =====
+    $('#btnProcess').addEventListener('click', process);
+    $('#btnClear').addEventListener('click', () => {
+      $('#rawInput').value = '';
+      $('#grpIp').value = '';
+      $('#grpDomain').value = '';
+      $('#outIp').textContent = '';
+      $('#outDomain').textContent = '';
+      $('#outCombined').textContent = '';
+      setWarn(''); statsBox.innerHTML='';
+    });
+
+    $('#fileInput').addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const text = await file.text();
+      $('#rawInput').value = text;
+      setWarn(`📄 File dimuat: <strong>${file.name}</strong> (${file.size} byte)`);
+    });
+
+    $('#btnSample').addEventListener('click', () => {
+      $('#rawInput').value = ['192.0.2.10', 'example.com', '2001:db8::1', '1.2.3.4/24', 'bad-input', 'sub.example.co.id'].join('\n');
+      setWarn('✔️ Contoh data dimasukkan. Tekan "Proses & Hasilkan".');
+    });
+
+    // Copy & Download buttons
+    function bindCopy(btnSel, outSel){
+      $(btnSel).addEventListener('click', async () => {
+        const text = $(outSel).textContent || '';
+        const ok = await copyToClipboard(text);
+        setWarn(ok ? '📋 Output disalin ke clipboard.' : '⚠️ Gagal menyalin ke clipboard.');
+      });
+    }
+    function bindDownload(btnSel, outSel, name){
+      $(btnSel).addEventListener('click', () => {
+        const text = $(outSel).textContent || '';
+        if(!text){ setWarn('ℹ️  Tidak ada output untuk diunduh.'); return; }
+        downloadFile(name, text);
+        setWarn(`⬇️  Berkas <strong>${name}</strong> diunduh.`);
+      });
+    }
+
+    bindCopy('#copyIp', '#outIp');
+    bindCopy('#copyDomain', '#outDomain');
+    bindCopy('#copyCombined', '#outCombined');
+
+    bindDownload('#dlIp', '#outIp', 'hasil-ip.txt');
+    bindDownload('#dlDomain', '#outDomain', 'hasil-domain.txt');
+    bindDownload('#dlCombined', '#outCombined', 'hasil-gabungan.txt');
+  </script>
+</body>
+</html>
