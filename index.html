@@ -294,7 +294,7 @@
       for(const d of ordered){
         lines.push(`edit ${d}`);
         lines.push('set type fqdn');
-        lines.push(`set fqdn *${d}`);
+        lines.push(`set fqdn *.${d}`);
         lines.push('next');
       }
       lines.push('end');
