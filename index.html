@@ -1,413 +1,60 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fortigate Config Generator (IP & Domain)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg: #0b1220;       /* deep navy */
-      --card: #101a2b;     /* slightly lighter */
-      --ink: #e6eefc;      /* off-white */
-      --muted: #9bb0d3;    /* muted text */
-      --brand: #6aa2ff;    /* primary */
-      --brand-2: #4de2c6;  /* accent */
-      --ok: #1fda7a;
-      --warn: #f7b733;
-      --err: #ff6b6b;
-      --code: #0c0f16;
-      --chip: rgba(106,162,255,.15);
-      --radius: 16px;
-      --radius-lg: 22px;
-      --shadow: 0 10px 35px rgba(0,0,0,.35);
-    }
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body{
-      margin: 0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-      background: radial-gradient(1200px 1200px at 10% -10%, rgba(77,226,198,.15), transparent 60%),
-                  radial-gradient(1200px 1200px at 120% 10%, rgba(106,162,255,.12), transparent 50%),
-                  var(--bg);
-      color: var(--ink);
-    }
-    .container{ max-width: 1100px; margin: 0 auto; padding: 32px 18px 60px; }
-    header{
-      display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom: 22px;
-    }
-    .brand{ display:flex; align-items:center; gap:14px; }
-    .brand-badge{
-      width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      display:grid; place-items:center; font-weight:800; color:#0b1220; box-shadow: 0 8px 20px rgba(106,162,255,.35);
-    }
-    h1{ font-size: clamp(22px, 3vw, 28px); margin: 0; letter-spacing: .2px; }
-    .subtitle{ color: var(--muted); margin-top: 6px; font-size: 14px; }
-
-    .grid{ display:grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 980px){ .grid{ grid-template-columns: 1.2fr .8fr; } }
-
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 60%), var(--card);
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-    .card h2{ margin: 6px 0 14px; font-size: 16px; letter-spacing: .2px; }
-    .row{ display:flex; gap: 10px; flex-wrap: wrap; }
-
-    input[type="text"], .fake-input, textarea{
-      width: 100%; background: rgba(12,15,22,.7); border: 1px solid rgba(255,255,255,.08);
-      color: var(--ink); padding: 12px 14px; border-radius: 12px; outline: none;
-    }
-    textarea{ min-height: 140px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-
-    .btn{
-      appearance: none; border: 0; background: linear-gradient(135deg, var(--brand), var(--brand-2));
-      color: #0b1220; font-weight: 700; padding: 12px 14px; border-radius: 12px; cursor: pointer; transition: transform .04s ease, box-shadow .2s;
-      box-shadow: 0 10px 24px rgba(106,162,255,.35);
-      display:inline-flex; align-items:center; gap:8px; text-decoration:none;
-    }
-    .btn:active{ transform: translateY(1px); }
-    .btn.secondary{ background: transparent; color: var(--ink); border: 1px solid rgba(255,255,255,.12); box-shadow: none; }
-
-    .chips{ display:flex; gap:8px; flex-wrap:wrap; }
-    .chip{ background: var(--chip); color: var(--ink); padding: 6px 10px; border-radius: 999px; font-size: 12px; border: 1px solid rgba(106,162,255,.3);
-    }
-
-    .out{ background: var(--code); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px; overflow: auto; white-space: pre; }
-
-    .section-title{ display:flex; align-items:center; justify-content:space-between; gap: 10px; margin-top: 12px; }
-    .small{ color: var(--muted); font-size: 12px; }
-
-    .footer-note{ margin-top: 18px; color: var(--muted); font-size: 12px; }
-    .hidden{ display:none !important; }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FortiGate Config Generator</title>
+<style>
+:root{--bg:#0b1220;--card:#101a2b;--ink:#e6eefc;--muted:#9bb0d3;--brand:#6aa2ff;--accent:#4de2c6;--code:#080d16;--line:rgba(255,255,255,.1);--radius:18px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:radial-gradient(1000px 800px at 0% 0%,rgba(77,226,198,.12),transparent 60%),radial-gradient(900px 800px at 100% 0%,rgba(106,162,255,.13),transparent 55%),var(--bg);color:var(--ink)}
+.container{max-width:1120px;margin:auto;padding:26px 18px 56px}header{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:13px}.badge{height:44px;width:44px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,var(--brand),var(--accent));color:#0b1220;font-weight:900}.title{font-size:clamp(22px,3vw,28px);margin:0}.subtitle{color:var(--muted);font-size:13px;margin-top:5px}.navbar{display:flex;gap:8px;margin:24px 0 18px;padding:6px;border:1px solid var(--line);border-radius:14px;background:rgba(16,26,43,.8);width:max-content;max-width:100%}.nav-btn{border:0;background:transparent;color:var(--muted);font-weight:700;padding:11px 16px;border-radius:10px;cursor:pointer}.nav-btn.active{color:#07121e;background:linear-gradient(135deg,var(--brand),var(--accent))}.page{display:none}.page.active{display:block}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.card{background:linear-gradient(180deg,rgba(255,255,255,.025),transparent 60%),var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:19px;box-shadow:0 12px 32px rgba(0,0,0,.22);min-width:0}.card h2{font-size:16px;margin:4px 0 14px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 220px}label,.small{font-size:12px;color:var(--muted)}input[type=text],input[type=file],textarea{width:100%;margin-top:7px;background:rgba(8,13,22,.8);border:1px solid var(--line);color:var(--ink);padding:12px 13px;border-radius:11px;outline:none}input:focus,textarea:focus{border-color:var(--brand)}textarea{min-height:150px;resize:vertical;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:750;cursor:pointer;color:#07121e;background:linear-gradient(135deg,var(--brand),var(--accent));display:inline-flex;justify-content:center;align-items:center;gap:7px}.btn.secondary{background:transparent;color:var(--ink);border:1px solid var(--line)}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.section-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.section-title h2{margin:3px 0 12px}.out{background:var(--code);border:1px solid var(--line);border-radius:12px;padding:13px;overflow:auto;white-space:pre;min-height:75px;color:#d8e7ff;font:13px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace}.chips{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.chip{font-size:12px;padding:6px 10px;border:1px solid rgba(106,162,255,.25);background:rgba(106,162,255,.12);border-radius:99px}.note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.6}.status{margin-top:12px;font-size:13px;color:var(--accent);overflow-wrap:anywhere}.help-list{color:var(--muted);font-size:13px;line-height:1.8;padding-left:20px}.output-card{margin-top:16px}.field{margin-bottom:13px}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.grid,.two-col{grid-template-columns:1fr}.container{padding:20px 12px 40px}.navbar{width:100%}.nav-btn{flex:1}}
+</style>
 </head>
-<body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <div class="brand-badge">FG</div>
-        <div>
-          <h1>Fortigate Config Generator</h1>
-          <div class="subtitle">Aplikasi web untuk memproses file campuran IP & Domain dan menghasilkan konfigurasi FortiGate.</div>
-        </div>
-      </div>
-      <!-- <div class="chips">
-        <span class="chip">Offline</span>
-        <span class="chip">Single File</span>
-        <span class="chip">Clipboard & Download</span>
-      </div> -->
-    </header>
-
-    <div class="grid">
-      <!-- Left: Inputs -->
-      <section class="card">
-        <h2>1) Masukan Data</h2>
-        <div class="row">
-          <div style="flex:1 1 280px">
-            <label class="small">Unggah file .txt (opsional)</label>
-            <div class="row">
-              <input id="fileInput" type="file" accept=".txt" class="fake-input" />
-              <button class="btn secondary" id="btnSample" type="button">Gunakan contoh</button>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:10px">
-          <label class="small">Atau tempel teks di sini (campuran IP / FQDN, dipisah spasi/enter)</label>
-          <textarea id="rawInput" placeholder="Contoh:\n192.0.2.10\nexample.com\n2001:db8::1\n1.2.3.4/24\nbad-input"></textarea>
-        </div>
-
-        <h2 style="margin-top:16px">2) Nama Group</h2>
-        <div class="row">
-          <input id="grpIp" type="text" placeholder="Nama group untuk IP (mis. Blocked-IP)" />
-          <input id="grpDomain" type="text" placeholder="Nama group untuk Domain (mis. Blocked-FQDN)" />
-        </div>
-
-        <div class="row" style="margin-top:14px">
-          <button class="btn" id="btnProcess" type="button">Proses & Hasilkan</button>
-          <button class="btn secondary" id="btnClear" type="button">Bersihkan</button>
-        </div>
-
-        <div id="warnBox" class="footer-note hidden"></div>
-      </section>
-
-      <!-- Right: Stats / Help -->
-      <aside class="card">
-        <h2>Bantuan Singkat</h2>
-        <ul class="small">
-          <li>Jika IP tanpa CIDR, otomatis: IPv4 → <code>/32</code>, IPv6 → <code>/128</code>.</li>
-          <li>Duplikat dihapus, urutan dipertahankan.</li>
-          <li>Domain diformat sebagai FQDN dengan wildcard: <code>set fqdn *example.com</code>.</li>
-          <li>Hasil dibagi: IP, Domain, dan Gabungan. Semua bisa <em>copy</em> atau <em>download</em>.</li>
-        </ul>
-        <div class="section-title" style="margin-top:10px"><strong>Status Parsing</strong><span class="small">otomatis muncul setelah proses</span></div>
-        <div class="chips" id="stats"></div>
-      </aside>
-    </div>
-
-    <!-- Outputs -->
-    <section class="card" style="margin-top:16px">
-      <div class="section-title"><h2>Output – Konfigurasi IP</h2>
-        <div class="row">
-          <button class="btn secondary" id="copyIp" type="button">Copy</button>
-          <button class="btn secondary" id="dlIp" type="button">Download</button>
-        </div>
-      </div>
-      <pre class="out" id="outIp" aria-label="config-ip"></pre>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <div class="section-title"><h2>Output – Konfigurasi Domain</h2>
-        <div class="row">
-          <button class="btn secondary" id="copyDomain" type="button">Copy</button>
-          <button class="btn secondary" id="dlDomain" type="button">Download</button>
-        </div>
-      </div>
-      <pre class="out" id="outDomain" aria-label="config-domain"></pre>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <div class="section-title"><h2>Output – Gabungan</h2>
-        <div class="row">
-          <button class="btn secondary" id="copyCombined" type="button">Copy</button>
-          <button class="btn secondary" id="dlCombined" type="button">Download</button>
-        </div>
-      </div>
-      <pre class="out" id="outCombined" aria-label="config-combined"></pre>
-    </section>
-
-    <div class="footer-note">Catatan: Nama objek pada <code>edit</code> mengikuti input (IP/FQDN) seperti skrip Python asli Anda.</div>
-  </div>
-
-  <script>
-    // ===== Helpers =====
-    const $ = (sel) => document.querySelector(sel);
-    const warnBox = $('#warnBox');
-    const statsBox = $('#stats');
-
-    function setWarn(html){
-      if(!html){ warnBox.classList.add('hidden'); warnBox.innerHTML = ''; return; }
-      warnBox.classList.remove('hidden');
-      warnBox.innerHTML = html;
-    }
-
-    function downloadFile(filename, content){
-      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = filename; a.click();
-      setTimeout(() => URL.revokeObjectURL(url), 500);
-    }
-
-    async function copyToClipboard(text){
-      try{ await navigator.clipboard.writeText(text); return true; }
-      catch{ return false; }
-    }
-
-    // ===== Validation & Normalization (JS port of your Python) =====
-    function isIPv6Literal(addr){ return addr.includes(':'); }
-
-    function normalizeIp(ip){
-      if(!ip.includes('/')){ return (isIPv6Literal(ip) ? ip + '/128' : ip + '/32'); }
-      return ip;
-    }
-
-    function isValidIPv4(s){
-      // 0-255 dotted quad
-      const m = s.match(/^([0-9]{1,3})(?:\.([0-9]{1,3})){3}$/);
-      if(!m) return false;
-      return s.split('.').every(oct => oct.length > 0 && Number(oct) >= 0 && Number(oct) <= 255 && String(Number(oct)) === String(Number(oct)).replace(/\..*/, ''));
-    }
-
-    function isValidIPv6(s){
-      // Use URL parser trick for IPv6 literal
-      try{
-        const u = new URL('http://[' + s + ']/');
-        return !!u.hostname; // browser will normalize if valid
-      }catch{ return false; }
-    }
-
-    function isValidIpNetwork(ip){
-      const parts = ip.split('/');
-      const hasCidr = parts.length === 2;
-      const addr = parts[0];
-      if(isIPv6Literal(addr)){
-        if(!isValidIPv6(addr)) return false;
-        const mask = hasCidr ? Number(parts[1]) : NaN;
-        return hasCidr ? (mask >= 0 && mask <= 128) : true;
-      }else{
-        if(!isValidIPv4(addr)) return false;
-        const mask = hasCidr ? Number(parts[1]) : NaN;
-        return hasCidr ? (mask >= 0 && mask <= 32) : true;
-      }
-    }
-
-    function isValidDomain(domain){
-      // Similar to your Python regex: simple and practical
-      const pattern = /^(?!-)[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-      return pattern.test(domain);
-    }
-
-    // ===== Generators (JS port) =====
-    function generateFortigateIpConfig(ips, groupName){
-      const seen = new Set();
-      const ordered = [];
-      for(let ip of ips){
-        ip = ip.trim(); if(!ip) continue;
-        ip = normalizeIp(ip);
-        if(!isValidIpNetwork(ip)){ addWarn(`⚠️  Warning: '${ip}' bukan IP valid, dilewati.`); continue; }
-        if(!seen.has(ip)){ ordered.push(ip); seen.add(ip); }
-      }
-      if(!ordered.length) return '';
-      const lines = [];
-      lines.push('config firewall address');
-      for(const ip of ordered){
-        lines.push(`edit ${ip}`);
-        lines.push(`set subnet ${ip}`);
-        lines.push('next');
-      }
-      lines.push('end');
-      lines.push('');
-      lines.push('config firewall addrgrp');
-      lines.push(`edit ${groupName}`);
-      lines.push('append member ' + ordered.join(' '));
-      lines.push('next');
-      lines.push('end');
-      return lines.join('\n');
-    }
-
-    function generateFortigateDomainConfig(domains, groupName){
-      const seen = new Set();
-      const ordered = [];
-      for(let d of domains){
-        d = d.trim(); if(!d) continue;
-        if(!isValidDomain(d)){ addWarn(`⚠️  Warning: '${d}' bukan domain valid, dilewati.`); continue; }
-        if(!seen.has(d)){ ordered.push(d); seen.add(d); }
-      }
-      if(!ordered.length) return '';
-      const lines = [];
-      lines.push('config firewall address');
-      for(const d of ordered){
-        lines.push(`edit ${d}`);
-        lines.push('set type fqdn');
-        lines.push(`set fqdn *.${d}`);
-        lines.push('next');
-      }
-      lines.push('end');
-      lines.push('');
-      lines.push('config firewall addrgrp');
-      lines.push(`edit ${groupName}`);
-      lines.push('append member ' + ordered.join(' '));
-      lines.push('next');
-      lines.push('end');
-      return lines.join('\n');
-    }
-
-    // ===== Orchestration =====
-    let warnMsgs = [];
-    function addWarn(msg){ warnMsgs.push(msg); }
-    function flushWarn(){
-      if(!warnMsgs.length){ setWarn(''); return; }
-      setWarn(warnMsgs.join('<br>'));
-      warnMsgs = [];
-    }
-
-    function parseItems(raw){
-      const tokens = raw.replace(/\n/g, ' ').split(' ').map(t => t.trim()).filter(Boolean);
-      const ips = []; const domains = [];
-      for(const item of tokens){
-        const normalized = normalizeIp(item);
-        if(isValidIpNetwork(normalized)) ips.push(item);
-        else if(isValidDomain(item)) domains.push(item);
-        else addWarn(`⚠️  Warning: '${item}' bukan IP/domain valid, dilewati.`);
-      }
-      return { ips, domains };
-    }
-
-    function updateStats({ips, domains, invalidCount}){
-      statsBox.innerHTML = '';
-      const mk = (text) => { const s = document.createElement('span'); s.className = 'chip'; s.textContent = text; return s; };
-      statsBox.appendChild(mk(`IP terdeteksi: ${ips}`));
-      statsBox.appendChild(mk(`Domain terdeteksi: ${domains}`));
-      if(invalidCount > 0) statsBox.appendChild(mk(`Invalid: ${invalidCount}`));
-    }
-
-    function process(){
-      const raw = ($('#rawInput').value || '').trim();
-      const grpIp = ($('#grpIp').value || '').trim() || 'Group-IP';
-      const grpDo = ($('#grpDomain').value || '').trim() || 'Group-FQDN';
-      if(!raw){ setWarn('ℹ️  Masukkan teks atau unggah file terlebih dahulu.'); return; }
-
-      warnMsgs = []; // reset
-      const { ips, domains } = parseItems(raw);
-
-      const cfgIp = generateFortigateIpConfig(ips, grpIp);
-      const cfgDo = generateFortigateDomainConfig(domains, grpDo);
-
-      const combined = [cfgIp, cfgDo].filter(Boolean).join('\n\n');
-
-      $('#outIp').textContent = cfgIp;
-      $('#outDomain').textContent = cfgDo;
-      $('#outCombined').textContent = combined;
-
-      const invalidCount = (warnMsgs.length);
-      updateStats({ ips: ips.length, domains: domains.length, invalidCount });
-      flushWarn();
-    }
-
-    // ===== Events =====
-    $('#btnProcess').addEventListener('click', process);
-    $('#btnClear').addEventListener('click', () => {
-      $('#rawInput').value = '';
-      $('#grpIp').value = '';
-      $('#grpDomain').value = '';
-      $('#outIp').textContent = '';
-      $('#outDomain').textContent = '';
-      $('#outCombined').textContent = '';
-      setWarn(''); statsBox.innerHTML='';
-    });
-
-    $('#fileInput').addEventListener('change', async (e) => {
-      const file = e.target.files?.[0];
-      if(!file) return;
-      const text = await file.text();
-      $('#rawInput').value = text;
-      setWarn(`📄 File dimuat: <strong>${file.name}</strong> (${file.size} byte)`);
-    });
-
-    $('#btnSample').addEventListener('click', () => {
-      $('#rawInput').value = ['192.0.2.10', 'example.com', '2001:db8::1', '1.2.3.4/24', 'bad-input', 'sub.example.co.id'].join('\n');
-      setWarn('✔️ Contoh data dimasukkan. Tekan "Proses & Hasilkan".');
-    });
-
-    // Copy & Download buttons
-    function bindCopy(btnSel, outSel){
-      $(btnSel).addEventListener('click', async () => {
-        const text = $(outSel).textContent || '';
-        const ok = await copyToClipboard(text);
-        setWarn(ok ? '📋 Output disalin ke clipboard.' : '⚠️ Gagal menyalin ke clipboard.');
-      });
-    }
-    function bindDownload(btnSel, outSel, name){
-      $(btnSel).addEventListener('click', () => {
-        const text = $(outSel).textContent || '';
-        if(!text){ setWarn('ℹ️  Tidak ada output untuk diunduh.'); return; }
-        downloadFile(name, text);
-        setWarn(`⬇️  Berkas <strong>${name}</strong> diunduh.`);
-      });
-    }
-
-    bindCopy('#copyIp', '#outIp');
-    bindCopy('#copyDomain', '#outDomain');
-    bindCopy('#copyCombined', '#outCombined');
-
-    bindDownload('#dlIp', '#outIp', 'hasil-ip.txt');
-    bindDownload('#dlDomain', '#outDomain', 'hasil-domain.txt');
-    bindDownload('#dlCombined', '#outCombined', 'hasil-gabungan.txt');
-  </script>
-</body>
-</html>
+<body><div class="container">
+<header><div class="brand"><div class="badge">FG</div><div><h1 class="title">FortiGate Config Generator</h1><div class="subtitle">Utilitas lokal untuk membuat konfigurasi IP/FQDN dan mengonversi command menjadi CSV.</div></div></div></header>
+<nav class="navbar" aria-label="Navigasi utama"><button class="nav-btn active" data-page="page1">Page 1 · IP & Domain</button><button class="nav-btn" data-page="page2">Page 2 · Command to CSV</button></nav>
+<main>
+<section id="page1" class="page active"><div class="grid">
+<div class="card"><h2>1) Masukkan Data</h2><div class="field"><label>Unggah file .txt (opsional)</label><input id="fileInput" type="file" accept=".txt"><div class="actions"><button class="btn secondary" id="btnSample" type="button">Gunakan contoh</button></div></div><div class="field"><label>Atau tempel IP / FQDN (dipisah spasi atau baris baru)</label><textarea id="rawInput" placeholder="192.0.2.10&#10;example.com&#10;2001:db8::1&#10;1.2.3.4/24"></textarea></div><h2>2) Nama Group</h2><div class="row"><input id="grpIp" type="text" placeholder="Nama group IP (mis. Blocked-IP)"><input id="grpDomain" type="text" placeholder="Nama group Domain (mis. Blocked-FQDN)"></div><div class="actions"><button class="btn" id="btnProcess" type="button">Proses & Hasilkan</button><button class="btn secondary" id="btnClear" type="button">Bersihkan</button></div><div class="status" id="status1" aria-live="polite"></div></div>
+<aside class="card"><h2>Bantuan Singkat</h2><ul class="help-list"><li>IP tanpa CIDR otomatis menjadi /32 untuk IPv4 atau /128 untuk IPv6.</li><li>Duplikat dihapus dengan urutan tetap.</li><li>Domain dibuat sebagai FQDN wildcard: <code>set fqdn *.example.com</code>.</li><li>Output dapat disalin atau diunduh.</li></ul><strong>Status Parsing</strong><div class="chips" id="stats"></div></aside></div>
+<div class="card output-card"><div class="section-title"><h2>Output – Konfigurasi IP</h2><div class="actions"><button class="btn secondary" data-copy="outIp">Copy</button><button class="btn secondary" data-download="outIp" data-name="hasil-ip.txt">Download</button></div></div><pre class="out" id="outIp"></pre></div>
+<div class="card output-card"><div class="section-title"><h2>Output – Konfigurasi Domain</h2><div class="actions"><button class="btn secondary" data-copy="outDomain">Copy</button><button class="btn secondary" data-download="outDomain" data-name="hasil-domain.txt">Download</button></div></div><pre class="out" id="outDomain"></pre></div>
+<div class="card output-card"><div class="section-title"><h2>Output – Gabungan</h2><div class="actions"><button class="btn secondary" data-copy="outCombined">Copy</button><button class="btn secondary" data-download="outCombined" data-name="hasil-gabungan.txt">Download</button></div></div><pre class="out" id="outCombined"></pre></div>
+</section>
+<section id="page2" class="page"><div class="grid"><section class="card"><h2>1) IP FortiGate</h2><label>Masukkan IP perangkat, satu IP per baris</label><textarea id="deviceIps" placeholder="192.168.20.254&#10;192.168.222.254"></textarea><div class="note">Setiap IP akan mendapatkan seluruh command di bawah, dengan sequence dimulai dari 1.</div><h2 style="margin-top:20px">2) Commands FortiGate</h2><label>Masukkan command, satu command per baris</label><textarea id="commands" placeholder="config firewall addrgrp&#10;edit Link Internet&#10;append member internet.id&#10;next&#10;end"></textarea><div class="note">Spasi pada nama setelah <code>edit</code> otomatis diubah menjadi backslash-space. Contoh: <code>edit Link\ Internet</code>.</div><div class="actions"><button class="btn" id="convertBtn" type="button">Convert ke CSV</button><button class="btn secondary" id="sample2" type="button">Isi contoh</button><button class="btn secondary" id="clear2" type="button">Bersihkan</button></div><div class="status" id="status2" aria-live="polite"></div></section>
+<aside class="card"><h2>Format Output</h2><p class="small">CSV menggunakan tiga kolom berikut:</p><pre class="out">ip,sequence,command
+192.168.20.254,1,config firewall addrgrp
+192.168.20.254,2,edit Link\ Internet
+192.168.20.254,3,append member internet.id
+192.168.20.254,4,next
+192.168.20.254,5,end</pre><ul class="help-list"><li>Header CSV otomatis dibuat.</li><li>Sequence diulang dari 1 untuk setiap IP.</li><li>Command yang mengandung koma akan di-quote sesuai format CSV.</li><li>Hasil hanya berupa teks; tidak ada koneksi langsung ke FortiGate.</li></ul></aside></div>
+<div class="card output-card"><div class="section-title"><h2>Output – CSV Text</h2><div class="actions"><button class="btn secondary" id="copyCsv" type="button">Copy</button><button class="btn secondary" id="downloadCsv" type="button">Download CSV</button></div></div><pre class="out" id="csvOutput">ip,sequence,command</pre></div></section>
+</main><div class="note">Catatan: Periksa kembali nama objek, syntax, dan urutan command sebelum menjalankannya pada perangkat FortiGate.</div>
+</div>
+<script>
+const $=s=>document.querySelector(s);const $$=s=>document.querySelectorAll(s);
+$$('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.nav-btn').forEach(b=>b.classList.toggle('active',b===btn));$$('.page').forEach(p=>p.classList.toggle('active',p.id===btn.dataset.page));}));
+function status1(t){$('#status1').textContent=t}function status2(t){$('#status2').textContent=t}
+function isIPv4(s){const a=s.split('.');return a.length===4&&a.every(x=>/^\d{1,3}$/.test(x)&&+x>=0&&+x<=255)}
+function isIPv6(s){if(!s.includes(':'))return false;try{return new URL('http://['+s+']/').hostname.length>0}catch{return false}}
+function isIpNet(s){const p=s.split('/');if(p.length>2)return false;const a=p[0],v6=a.includes(':');if(!(v6?isIPv6(a):isIPv4(a)))return false;if(p.length===1)return true;return /^\d+$/.test(p[1])&&+p[1]>=0&&+p[1]<=(v6?128:32)}
+function normIp(s){if(s.includes('/'))return s;return s+(s.includes(':')?'/128':'/32')}
+function isDomain(s){return /^(?=.{1,253}$)(?!-)[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(s)&&!s.includes('..')}
+function safeName(s){return s.replace(/[\r\n]/g,'').trim()}
+function genIp(items,group){const list=[...new Set(items.map(x=>normIp(x)).filter(isIpNet))];if(!list.length)return '';const l=['config firewall address'];list.forEach(ip=>l.push(`edit ${ip}`,`set subnet ${ip}`,'next'));l.push('end','','config firewall addrgrp',`edit ${safeName(group)||'Group-IP'}`,'append member '+list.join(' '),'next','end');return l.join('\n')}
+function genDomain(items,group){const list=[...new Set(items.filter(isDomain))];if(!list.length)return '';const l=['config firewall address'];list.forEach(d=>l.push(`edit ${d}`,'set type fqdn',`set fqdn *.${d}`,'next'));l.push('end','','config firewall addrgrp',`edit ${safeName(group)||'Group-FQDN'}`,'append member '+list.join(' '),'next','end');return l.join('\n')}
+$('#fileInput').addEventListener('change',async e=>{const f=e.target.files[0];if(f){$('#rawInput').value=await f.text();status1(`File dimuat: ${f.name} (${f.size} byte)`);}});
+$('#btnSample').addEventListener('click',()=>{$('#rawInput').value=['192.0.2.10','example.com','2001:db8::1','1.2.3.4/24','bad-input','sub.example.co.id'].join('\n');status1('Contoh data dimasukkan. Klik Proses & Hasilkan.');});
+$('#btnProcess').addEventListener('click',()=>{const raw=$('#rawInput').value.trim();if(!raw){status1('Masukkan teks atau unggah file terlebih dahulu.');return}const tokens=raw.split(/[\s,;]+/).filter(Boolean),ips=[],domains=[],invalid=[];tokens.forEach(x=>{if(isIpNet(normIp(x)))ips.push(x);else if(isDomain(x))domains.push(x);else invalid.push(x)});const a=genIp(ips,$('#grpIp').value),b=genDomain(domains,$('#grpDomain').value);$('#outIp').textContent=a;$('#outDomain').textContent=b;$('#outCombined').textContent=[a,b].filter(Boolean).join('\n\n');$('#stats').innerHTML='';[['IP terdeteksi: '+new Set(ips).size],['Domain terdeteksi: '+new Set(domains).size],['Invalid: '+invalid.length]].forEach(([t])=>{const el=document.createElement('span');el.className='chip';el.textContent=t;$('#stats').appendChild(el)});status1(invalid.length?'Dilewati (invalid): '+invalid.join(', '):'Selesai. Data valid berhasil diproses.');});
+$('#btnClear').addEventListener('click',()=>{$('#rawInput').value='';$('#grpIp').value='';$('#grpDomain').value='';['outIp','outDomain','outCombined'].forEach(id=>$('#'+id).textContent='');$('#stats').innerHTML='';status1('');$('#fileInput').value='';});
+function csvEscape(v){return /[",\r\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+function normalizeCommand(line){let s=line.trim();if(/^edit\s+/i.test(s)){const rest=s.replace(/^edit\s+/i,'').trim();if(rest&&!rest.startsWith('"'))s='edit '+rest.replace(/\s+/g,'\\ ');}return s}
+$('#convertBtn').addEventListener('click',()=>{const rawIps=$('#deviceIps').value.trim(),rawCmds=$('#commands').value.trim();if(!rawIps||!rawCmds){status2('Isi IP FortiGate dan commands terlebih dahulu.');return}const ips=[...new Set(rawIps.split(/[\s,;]+/).filter(Boolean))],commands=rawCmds.split(/\r?\n/).map(normalizeCommand).filter(Boolean);const bad=ips.filter(ip=>!isIPv4(ip)&&!isIPv6(ip));if(bad.length){status2('Format IP tidak valid: '+bad.join(', '));return}const rows=['ip,sequence,command'];ips.forEach(ip=>commands.forEach((cmd,i)=>rows.push([ip,i+1,cmd].map(csvEscape).join(','))));$('#csvOutput').textContent=rows.join('\n');status2(`Berhasil: ${ips.length} IP × ${commands.length} command = ${ips.length*commands.length} baris data.`)});
+$('#sample2').addEventListener('click',()=>{$('#deviceIps').value='192.168.20.254\n192.168.222.254';$('#commands').value='config firewall addrgrp\nedit Link Internet\nappend member internet.id\nnext\nend';status2('Contoh dimasukkan. Klik Convert ke CSV.');});
+$('#clear2').addEventListener('click',()=>{$('#deviceIps').value='';$('#commands').value='';$('#csvOutput').textContent='ip,sequence,command';status2('');});
+async function copyText(value){try{await navigator.clipboard.writeText(value);return true}catch{const ta=document.createElement('textarea');ta.value=value;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();return ok}}
+$$('[data-copy]').forEach(b=>b.addEventListener('click',async()=>{const ok=await copyText($('#'+b.dataset.copy).textContent);status1(ok?'Output berhasil disalin.':'Gagal menyalin output.')}));
+$$('[data-download]').forEach(b=>b.addEventListener('click',()=>download(b.dataset.name,$('#'+b.dataset.download).textContent,status1)));
+$('#copyCsv').addEventListener('click',async()=>status2(await copyText($('#csvOutput').textContent)?'CSV berhasil disalin ke clipboard.':'Gagal menyalin CSV.'));
+$('#downloadCsv').addEventListener('click',()=>download('fortigate-commands.csv',$('#csvOutput').textContent,status2));
+function download(name,content,cb){if(!content.trim()){cb('Tidak ada output untuk diunduh.');return}const blob=new Blob([content],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),500);cb('File '+name+' berhasil diunduh.');}
+</script></body></html>
